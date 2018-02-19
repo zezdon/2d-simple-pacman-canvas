@@ -4,22 +4,27 @@ countblink = 10,
 ghost = false;
 ghost2 = false;
 var player = {
-x: 50,
-y: 100,
-pacmouth: 320,
-pacdir: 0,
-psize: 32,
-speed: 5
+    x: 50,
+    y: 100,
+    pacmouth: 320,
+    pacdir: 0,
+    psize: 32,
+    speed: 5
 };
 var enemy = {
-x: 150,
-y: 200,
-speed: 5,
-moving: 0,
-dirx: 0,
-diry: 0,
-flash: 0,
-ghosteat: false
+    x: 150,
+    y: 200,
+    speed: 5,
+    moving: 0,
+    dirx: 0,
+    diry: 0,
+    flash: 0,
+    ghosteat: false
+};
+var powerdot = {
+    x: 10,
+    y: 10,
+    powerup: false,
 };
 
 //setup canvas
@@ -101,18 +106,26 @@ function myNum(n) {
 function render() {
     context.fillStyle = "black";
     context.fillRect(0, 0, canvas.width, canvas.height);
+    
+    if(!powerdot.powerup) {
+        powerdot.x = myNum(420)+30;
+        powerdot.y = myNum(250);
+        //only ont dot
+        powerdot.powerup = true;
+    }
     // set position of ghost
     // check if ghost is on screen
     if(!ghost) {
         enemy.ghostNum = myNum(5)*64;
         enemy.x = myNum(450);
         enemy.y = myNum(250)+30;
+        //only one ghost
         ghost = true;
     }
     // move enemy
     if(enemy.moving < 0) {
-        enemy.moving = (myNum(30)*3)+10+myNum(1);
-        enemy.speed = myNum(4)+1;
+        enemy.moving = (myNum(20)*3)+10+myNum(1);
+        enemy.speed = myNum(3)+1;
         enemy.dirx = 0;
         enemy.diry = 0;
         if(enemy.moving % 2) {
@@ -135,6 +148,26 @@ function render() {
     //x and y new position from value dirx and diry
     enemy.x = enemy.x + enemy.dirx;
     enemy.y = enemy.y + enemy.diry;
+
+    // enemy prevent run off screen
+    if (enemy.x >= (canvas.width - 32)) {
+        enemy.x = 0;
+    } if (enemy.y >= (canvas.height -32)) {
+        enemy.y = 0;
+    } if (enemy.x < 0) {
+        enemy.x = (canvas.width - 32);
+    } if (enemy.y < 0) {
+        enemy.y = (canvas.height - 32);
+    } 
+
+    //draw powerdot
+    if(powerdot.powerup) {
+        context.fillStyle = "#ffff00";
+        context.beginPath();
+        context.arc(powerdot.x, powerdot.y, 10, 0, Math.PI * 2, true);
+        context.closePath();
+        context.fill();
+    }
 
     // write score
     context.font = "20px Verdana";
