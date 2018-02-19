@@ -25,6 +25,8 @@ var powerdot = {
     x: 10,
     y: 10,
     powerup: false,
+    pcountdown: 0,
+    ghostNum: 0
 };
 
 //setup canvas
@@ -158,7 +160,18 @@ function render() {
         enemy.x = (canvas.width - 32);
     } if (enemy.y < 0) {
         enemy.y = (canvas.height - 32);
-    } 
+    }
+
+//Collision detection powerup
+    if (player.x <= powerdot.x && powerdot.x <= (player.x + 32) && player.y <= powerdot.y && powerdot.y <= (player.y + 32)) {
+        console.log('hit');
+        powerdot.powerup = false;
+        powerdot.pcountdown = 500;
+        powerdot.ghostNum = enemy.ghostNum;
+        enemy.ghostNum = 384;
+        powerdot.x = 0;
+        powerdot.y = 0;
+    }
 
     //draw powerdot
     if(powerdot.powerup) {
