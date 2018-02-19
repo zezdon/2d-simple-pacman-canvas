@@ -21,6 +21,16 @@ var enemy = {
     flash: 0,
     ghosteat: false
 };
+var enemy2 = {
+    x: 150,
+    y: 200,
+    speed: 5,
+    moving: 0,
+    dirx: 0,
+    diry: 0,
+    flash: 0,
+    ghosteat: false
+};
 var powerdot = {
     x: 10,
     y: 10,
@@ -111,7 +121,7 @@ function render() {
     
     if(!powerdot.powerup && powerdot.pcountdown < 5) {
         powerdot.x = myNum(420)+30;
-        powerdot.y = myNum(250);
+        powerdot.y = myNum(250)+30;
         //only one dot at once
         powerdot.powerup = true;
     }
@@ -189,13 +199,16 @@ function render() {
         enemy.ghostNum = 384;
         powerdot.x = 0;
         powerdot.y = 0;
-        powerdot.ghosteat = true;        
+        powerdot.ghosteat = true;
+        //increase the player speed when hit the powerdot
+        player.speed=10;
     }
     if(powerdot.ghosteat) {
         powerdot.pcountdown--;
         if(powerdot.pcountdown<=0) {
             powerdot.ghosteat=false;
             enemy.ghostNum = powerdot.ghostNum;
+            player.speed=5;
         }
     }
     //draw powerdot
