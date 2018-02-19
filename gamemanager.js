@@ -36,7 +36,8 @@ var powerdot = {
     y: 10,
     powerup: false,
     pcountdown: 0,
-    ghostNum: 0
+    ghostNum: 0,
+    ghostNum2: 0
 };
 
 //setup canvas
@@ -134,6 +135,15 @@ function render() {
         //only one ghost
         ghost = true;
     }
+    // set position of ghost
+    // check if ghost is on screen
+    if(!ghost2) {
+        enemy2.ghostNum = myNum(5)*64;
+        enemy2.x = myNum(450);
+        enemy2.y = myNum(250)+30;
+        //only one ghost
+        ghost2 = true;
+    }    
     // move enemy
     if(enemy.moving < 0) {
         enemy.moving = (myNum(20)*3)+10+myNum(1);
@@ -175,6 +185,44 @@ function render() {
     } if (enemy.y < 0) {
         enemy.y = (canvas.height - 32);
     }
+    
+if (enemy2.moving <0) {
+    enemy2.moving = (myNum(20) * 3) + myNum(1);
+    enemy2.speed = myNum(2) + 1;
+    enemy2.dirx = 0;
+    enemy2.diry = 0;
+    if (powerdot.ghosteat) {
+        enemy2.speed = enemy2.speed * -1;
+    } if (enemy2.moving %2) {
+        if (player.x < enemy2.x) {
+            enemy2.dirx = -enemy2.speed;
+        } else {
+            enemy2.dirx = enemy2.speed;
+        }
+    } else {
+        if (player.y < enemy2.y) {
+            enemy2.diry = -enemy2.speed;
+        } else {
+            enemy2.diry = enemy2.speed;
+        }
+    }
+} 
+enemy2.moving--;
+enemy2.x = enemy2.x + enemy2.dirx;
+enemy2.y = enemy2.y + enemy2.diry;
+// prevent run off screen
+if (enemy2.x >= (canvas.width - 32)) {
+    enemy2.x = 0;
+}
+if (enemy2.y>= (canvas.height -32)) {
+    enemy2.y = 0;
+}
+if (enemy2.x<0) {
+    enemy2.x = (canvas.width - 32);
+}
+if (enemy2.y<0) {
+    enemy2.y = (canvas.height - 32);
+}        
     //Collision detection Ghost
     if (player.x <= (enemy.x + 26) && enemy.x <= (player.x + 26) && player.y <= (enemy.y + 26) && enemy.y <= (player.y + 32)) {    
         console.log('ghost');
@@ -190,28 +238,48 @@ function render() {
         enemy.y = 200;
         powerdot.pcountdown = 0;
     }
+
+    if (player.x <= (enemy2.x + 26) && enemy2.x <= (player.x + 26) && player.y <= (enemy2.y + 26) && enemy2.y <= (player.y + 32)) {    
+        console.log('ghost2');
+        //check if player win or ghost2 win
+        if(powerdot.ghosteat) {
+            score++;
+        } else {
+            gscore++;
+        }
+        player.x = 10;
+        player.y = 100;
+        enemy2.x = 300;
+        enemy2.y = 200;
+        powerdot.pcountdown = 0;
+    }
+            
     //Collision detection Powerdot
     if (player.x <= powerdot.x && powerdot.x <= (player.x + 32) && player.y <= powerdot.y && powerdot.y <= (player.y + 32)) {
         console.log('hit');
         powerdot.powerup = false;
         powerdot.pcountdown = 500;
         powerdot.ghostNum = enemy.ghostNum;
+        powerdot.ghostNum = enemy2.ghostNum;
         enemy.ghostNum = 384;
+        enemy2.ghostNum = 384;
         powerdot.x = 0;
         powerdot.y = 0;
         powerdot.ghosteat = true;
         //increase the player speed when hit the powerdot
         player.speed=10;
     }
+    //powerup countdown
     if(powerdot.ghosteat) {
         powerdot.pcountdown--;
         if(powerdot.pcountdown<=0) {
             powerdot.ghosteat=false;
             enemy.ghostNum = powerdot.ghostNum;
+            enemy2.ghostNum = powerdot.ghostNum;
             player.speed=5;
         }
     }
-    //draw powerdot
+    //draw power up dot
     if(powerdot.powerup) {
         context.fillStyle = "#ffff00";
         context.beginPath();
@@ -226,9 +294,11 @@ function render() {
     } else {
         countblink = 20;
         if (enemy.flash == 0) {
-            enemy.flash = 32;            
+            enemy.flash = 32;
+            enemy2.flash = 32;
         } else {
-            enemy.flash = 0;            
+            enemy.flash = 0;
+            enemy2.flash = 0;
         }
     }
 
@@ -237,6 +307,7 @@ function render() {
     context.fillStyle = "white";
     context.fillText("Hero: " + score + " vs Enemy:" + gscore, 2, 18);
     // draw characters
+    context.drawImage(mainImage, enemy2.ghostNum, enemy2.flash, 32, 32, enemy2.x, enemy2.y, 32, 32);
     context.drawImage(mainImage, enemy.ghostNum, enemy.flash, 32, 32, enemy.x, enemy.y, 32, 32);
     // draw ghost
     context.drawImage(mainImage, player.pacmouth, player.pacdir, 32, 32, player.x, player.y, 32, 32);
