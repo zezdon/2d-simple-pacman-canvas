@@ -130,6 +130,10 @@ function render() {
         enemy.speed = myNum(3)+1;
         enemy.dirx = 0;
         enemy.diry = 0;
+        //change enemies movement to opposite direction
+        if(powerdot.ghosteat) {
+            enemy.speed=enemy.speed*-1;
+        }
         if(enemy.moving % 2) {
           if(player.x < enemy.x){
               enemy.dirx = -enemy.speed;
@@ -161,8 +165,22 @@ function render() {
     } if (enemy.y < 0) {
         enemy.y = (canvas.height - 32);
     }
-
-//Collision detection powerup
+    //Collision detection Ghost
+    if (player.x <= (enemy.x + 26) && enemy.x <= (player.x + 26) && player.y <= (enemy.y + 26) && enemy.y <= (player.y + 32)) {    
+        console.log('ghost');
+        //check if player win or ghost win
+        if(powerdot.ghosteat) {
+            score++;
+        } else {
+            gscore++;
+        }
+        player.x = 10;
+        player.y = 100;
+        enemy.x = 300;
+        enemy.y = 200;
+        powerdot.pcountdown = 0;
+    }
+    //Collision detection Powerdot
     if (player.x <= powerdot.x && powerdot.x <= (player.x + 32) && player.y <= powerdot.y && powerdot.y <= (player.y + 32)) {
         console.log('hit');
         powerdot.powerup = false;
