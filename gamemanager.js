@@ -38,12 +38,12 @@ mainImage.src = "sprites.png";
 //add key listener
 var keyclick = {};
 document.addEventListener("keydown", function(event) {
-keyclick[event.keyCode] = true;
-move(keyclick);
+    keyclick[event.keyCode] = true;
+    move(keyclick);
 }, false);
 
 document.addEventListener("keyup", function(event) {
-delete keyclick[event.keyCode];
+    delete keyclick[event.keyCode];
 }, false);
 
 // key functions
@@ -101,13 +101,47 @@ function myNum(n) {
 function render() {
     context.fillStyle = "black";
     context.fillRect(0, 0, canvas.width, canvas.height);
+    // set position of ghost
+    // check if ghost is on screen
+    if(!ghost) {
+        enemy.ghostNum = myNum(5)*64;
+        enemy.x = myNum(450);
+        enemy.y = myNum(250)+30;
+        ghost = true;
+    }
+    // move enemy
+    if(enemy.moving < 0) {
+        enemy.moving = (myNum(30)*3)+10+myNum(1);
+        enemy.speed = myNum(4)+1;
+        enemy.dirx = 0;
+        enemy.diry = 0;
+        if(enemy.moving % 2) {
+          if(player.x < enemy.x){
+              enemy.dirx = -enemy.speed;
+          } else {
+              enemy.dirx = enemy.speed;
+          }  
+        } else {
+          if(player.y < enemy.y){
+              enemy.diry = -enemy.speed;
+          } else {
+              enemy.diry = enemy.speed;
+          }              
+        }
+    }
+    
+    //reset moving
+    enemy.moving--;
+    //x and y new position from value dirx and diry
+    enemy.x = enemy.x + enemy.dirx;
+    enemy.y = enemy.y + enemy.diry;
 
     // write score
     context.font = "20px Verdana";
     context.fillStyle = "white";
     context.fillText("Hero: " + score + " vs Enemy:" + gscore, 2, 18);
     // draw characters
-    context.drawImage(mainImage, 0, 0, 32, 32, enemy.x, enemy.y, 32, 32);
+    context.drawImage(mainImage, enemy.ghostNum, 0, 32, 32, enemy.x, enemy.y, 32, 32);
     // draw ghost
     context.drawImage(mainImage, player.pacmouth, player.pacdir, 32, 32, player.x, player.y, 32, 32);
 }
